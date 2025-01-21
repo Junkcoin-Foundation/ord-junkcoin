@@ -41,7 +41,7 @@ impl Chain {
 
   pub(crate) fn first_inscription_height(self) -> u32 {
     match self {
-      Self::Mainnet => 250000,
+      Self::Mainnet => 273000,
       Self::Regtest => 0,
       Self::Signet => 0,
       Self::Testnet => 0,
@@ -50,7 +50,7 @@ impl Chain {
 
   pub(crate) fn first_june_height(self) -> u32 {
     match self {
-      Self::Mainnet => 350000,
+      Self::Mainnet => 300000,
       Self::Regtest => 0,
       Self::Signet => 0,
       Self::Testnet => 0,

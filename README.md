@@ -1,6 +1,6 @@
 # Shibes
 
-ℹ️ This is a fork/based on [Junkcoin-Foundation/ord-junkcoin](https://github.com/Junkcoin-Foundation/ord-junkcoin)
+ℹ️ This is a fork/based Dogecoin wonky-ord
 
 ## Key differences
 
