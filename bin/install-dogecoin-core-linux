@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+version=1.14.6
+
+wget \
+  -O junkcoin.tar.gz \
+  https://github.com/junkcoin/junkcoin/releases/download/v$version/junkcoin-$version-x86_64-linux-gnu.tar.gz
+
+tar \
+  -xzvf junkcoin.tar.gz \
+  -C /usr/local/bin \
+  --strip-components 1 \
+  junkcoin-$version/bin/{junkcoin-cli,junkcoind}

@@ -1,0 +1,26 @@
+<h1>June Balances</h1>
+<table>
+  <tr>
+    <th>june</th>
+    <th>balances</th>
+  </tr>
+%% for (june, balances) in &self.balances {
+  <tr>
+    <td><a href=/june/{{ june }}>{{ june }}</a></td>
+    <td>
+      <table>
+%% for (outpoint, balance) in balances {
+        <tr>
+          <td class=monospace>
+            <a href=/output/{{ outpoint }}>{{ outpoint }}</a>
+          </td>
+          <td class=monospace>
+            {{ balance }}
+          </td>
+        </tr>
+%% }
+      </table>
+    </td>
+  </tr>
+%% }
+</table>

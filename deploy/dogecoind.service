@@ -1,0 +1,33 @@
+[Unit]
+After=network-online.target
+Description=Junkcoin daemon
+Documentation=https://github.com/junkcoin/junkcoin/blob/master/doc/init.md
+Wants=network-online.target
+
+[Service]
+ConfigurationDirectory=junkcoin
+ConfigurationDirectoryMode=0710
+ExecStart=/usr/local/bin/junkcoind \
+  -conf=/etc/junkcoin/junkcoin.conf \
+  -chain=${CHAIN}
+ExecStartPre=/bin/chgrp junkcoin /etc/junkcoin
+Group=junkcoin
+MemoryDenyWriteExecute=true
+NoNewPrivileges=true
+PermissionsStartOnly=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+Restart=on-failure
+RuntimeDirectory=junkcoind
+RuntimeDirectoryMode=0710
+StateDirectory=junkcoind
+StateDirectoryMode=0710
+TimeoutStartSec=infinity
+TimeoutStopSec=600
+Type=simple
+User=junkcoin
+
+[Install]
+WantedBy=multi-user.target
