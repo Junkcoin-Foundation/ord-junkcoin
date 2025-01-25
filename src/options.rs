@@ -37,10 +37,15 @@ pub(crate) struct Options {
   )]
   pub(crate) first_inscription_height: Option<u32>,
   #[arg(
-  long,
-  help = "Don't look for junes below <FIRST_JUNE_HEIGHT>."
+    long,
+    help = "Don't look for junes below <FIRST_JUNE_HEIGHT>."
   )]
   pub(crate) first_june_height: Option<u32>,
+  #[arg(
+    long,
+    help = "Don't look for junk20 tokens below <FIRST_JUNK20_HEIGHT>."
+  )]
+  pub(crate) first_junk20_height: Option<u32>,
   #[arg(long, help = "Limit index to <HEIGHT_LIMIT> blocks.")]
   pub(crate) height_limit: Option<u32>,
   #[arg(long, help = "Use index at <INDEX>.")]
@@ -48,8 +53,8 @@ pub(crate) struct Options {
   #[arg(long, help = "Track junk20 tokens and balances.")]
   pub(crate) index_junk20: bool,
   #[arg(
-  long,
-  help = "Track location of junes. JUNES ARE IN AN UNFINISHED PRE-ALPHA STATE AND SUBJECT TO CHANGE AT ANY TIME."
+    long,
+    help = "Track location of junes. JUNES ARE IN AN UNFINISHED PRE-ALPHA STATE AND SUBJECT TO CHANGE AT ANY TIME."
   )]
   pub(crate) index_junes: bool,
   #[arg(long, help = "Track location of all satoshis.")]
@@ -61,8 +66,8 @@ pub(crate) struct Options {
   #[arg(long, help = "Connect to Junkcoin Core RPC at <RPC_URL>.")]
   pub(crate) rpc_url: Option<String>,
   #[arg(
-  long,
-  help = "Number of parallel requests to junkcoin node."
+    long,
+    help = "Number of parallel requests to junkcoin node."
   )]
   pub(crate) nr_parallel_requests: Option<usize>,
   #[arg(long, short, help = "Use signet. Equivalent to `--chain signet`.")]
@@ -111,6 +116,18 @@ impl Options {
       self
           .first_june_height
           .unwrap_or_else(|| self.chain().first_june_height())
+    }
+  }
+
+  pub(crate) fn first_junk20_height(&self) -> u32 {
+    if self.chain() == Chain::Regtest {
+      self.first_junk20_height.unwrap_or(0)
+    } else if integration_test() {
+      0
+    } else {
+      self
+        .first_junk20_height
+        .unwrap_or_else(|| self.chain().first_junk20_height())
     }
   }
 

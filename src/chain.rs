@@ -48,6 +48,15 @@ impl Chain {
     }
   }
 
+  pub(crate) fn first_junk20_height(self) -> u32 {
+    match self {
+      Self::Mainnet => 273000,
+      Self::Regtest => 0,
+      Self::Signet => 0,
+      Self::Testnet => 0,
+    }
+  }
+
   pub(crate) fn first_june_height(self) -> u32 {
     match self {
       Self::Mainnet => 300000,

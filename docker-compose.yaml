@@ -1,6 +1,6 @@
 services:
   ord-indexer:
-    image: junkcoin/ord-junkcoin
+    image: junkcoin/ord-junkcoin-prod
     env_file:
       - .env
     environment:

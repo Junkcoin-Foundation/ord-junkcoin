@@ -535,7 +535,7 @@ impl<'index> Updater<'_> {
         }
       }
 
-      if index.index_junk20 && self.height >= index.first_inscription_height {
+      if index.index_junk20 && self.height >= index.first_junk20_height {
         let operations = inscription_updater.operations.clone();
 
         // Create a protocol manager to index the block of junk20 data.
