@@ -15,6 +15,28 @@ You can import the `openapi.yaml` file and view the API documentation via Import
 
 ## TL;DR How to run
 
+### Download Pre-build `index.redb` for Ord Server (credit Lomiamai)
+
+Make sure to download prebuilt `index.redb` [here]([openapi.yaml](https://drive.google.com/file/d/14LfaHrnZE12CvBSB-0jxKQu_8TYp-cH0/view?usp=sharing)) before proceed to ord indexing.
+Download `ord-index.zip` and unzip the file `index.redb`
+
+```bash
+# Install gdown if you haven't already
+pip install gdown
+
+# Use gdown with the -O flag to specify output filename and --fuzzy flag for large files
+gdown --fuzzy "https://drive.google.com/file/d/14LfaHrnZE12CvBSB-0jxKQu_8TYp-cH0/view?usp=sharing" -O ord-index.zip
+
+# Then unzip and move as planned
+mkdir -p /mnt/ord-node/indexer-data-main
+unzip ord-index.zip -d temp_dir && \
+mv temp_dir/index.redb /mnt/ord-node/indexer-data-main/ && \
+rm -r temp_dir
+
+# Verify the file is in place
+ls -l /mnt/ord-node/indexer-data-main/index.redb
+```
+
 ### Preqrequisites
 You will have to launch your own Junkcoin node and have it fully synced. You can use the following guide to set up your own Junkcoin node:
 1. Download latest version from [Junkcoin](https://github.com/Junkcoin-Foundation/junkcoin-core/releases) and install it.
