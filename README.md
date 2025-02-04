@@ -1,4 +1,4 @@
-# Shibes
+# Ord-Junkcoin
 
 ℹ️ This is a fork/based Dogecoin wonky-ord
 
@@ -21,13 +21,13 @@ Make sure to download prebuilt `index.redb` [here]([openapi.yaml](https://drive.
 Download `ord-index.zip` and unzip the file `index.redb`
 
 ```bash
-# Install gdown if you haven't already
+# Install gdown for google largr file download
 pip install gdown
 
-# Use gdown with the -O flag to specify output filename and --fuzzy flag for large files
+# Download ord-index.zip gdown
 gdown --fuzzy "https://drive.google.com/file/d/14LfaHrnZE12CvBSB-0jxKQu_8TYp-cH0/view?usp=sharing" -O ord-index.zip
 
-# Then unzip and move as planned
+# Then unzip and move to ord index path
 mkdir -p /mnt/ord-node/indexer-data-main
 unzip ord-index.zip -d temp_dir && \
 mv temp_dir/index.redb /mnt/ord-node/indexer-data-main/ && \
