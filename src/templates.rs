@@ -1,5 +1,6 @@
 use {boilerplate::Boilerplate, super::*};
 pub(crate) use {
+  api::ApiHtml,
   block::BlockHashAndConfirmations,
   block::BlockHtml,
   block::BlockJson,
@@ -29,6 +30,7 @@ pub(crate) use {
   utxo::Utxo,
 };
 
+mod api;
 mod block;
 mod junk20;
 mod june;

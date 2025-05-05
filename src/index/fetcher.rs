@@ -76,7 +76,27 @@ impl Fetcher {
 
     let buf = hyper::body::to_bytes(response).await?;
 
-    let mut results: Vec<JsonResponse<String>> = serde_json::from_slice(&buf)?;
+    // Add better error handling for JSON parsing
+    let results: Vec<JsonResponse<String>> = match serde_json::from_slice(&buf) {
+      Ok(results) => results,
+      Err(e) => {
+        // Log the error and the response body for debugging
+        let body_str = String::from_utf8_lossy(&buf);
+        log::error!("Failed to parse JSON response: {}", e);
+        log::error!("Response body: {}", body_str);
+
+        // If the response is not a valid JSON array, it might be a single JSON object
+        // Try to parse it as a single response
+        match serde_json::from_slice::<JsonResponse<String>>(&buf) {
+          Ok(single_result) => vec![single_result],
+          Err(_) => {
+            return Err(anyhow!("Failed to parse JSON response: {}", e));
+          }
+        }
+      }
+    };
+
+    let mut results = results;
 
     // Return early on any error, because we need all results to proceed
     if let Some(err) = results.iter().find_map(|res| res.error.as_ref()) {

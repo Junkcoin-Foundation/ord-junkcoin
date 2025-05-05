@@ -636,7 +636,7 @@ dependencies = [
 [[package]]
 name = "bitcoin"
 version = "0.29.2"
-source = "git+https://github.com/hieujson/rust-junkcoin-ord#5c5b2ac2120d7f35a36196fca8e5f99c6e1210ba"
+source = "git+https://github.com/Junkcoin-Foundation/rust-junkcoin-ord#52503d66b5a0379b45cad547b9e55665ccaeb7bf"
 dependencies = [
  "bech32",
  "bitcoin_hashes",
@@ -656,7 +656,7 @@ dependencies = [
 [[package]]
 name = "bitcoincore-rpc"
 version = "0.16.0"
-source = "git+https://github.com/hieujson/rust-junkcoin-rpc#03933810dec7844ee580c127fa953cba7d73623f"
+source = "git+https://github.com/Junkcoin-Foundation/rust-junkcoin-rpc#f98cd3d30c3dde616ccdec410dd5d997d6225440"
 dependencies = [
  "bitcoincore-rpc-json",
  "jsonrpc 0.13.0",
@@ -668,7 +668,7 @@ dependencies = [
 [[package]]
 name = "bitcoincore-rpc-json"
 version = "0.16.0"
-source = "git+https://github.com/hieujson/rust-junkcoin-rpc#03933810dec7844ee580c127fa953cba7d73623f"
+source = "git+https://github.com/Junkcoin-Foundation/rust-junkcoin-rpc#f98cd3d30c3dde616ccdec410dd5d997d6225440"
 dependencies = [
  "bitcoin",
  "serde",

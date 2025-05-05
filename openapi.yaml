@@ -1,13 +1,13 @@
 openapi: 3.0.0
 info:
-  title: Wonky Ord API
+  title: Junkcoin Ord API
   description: API for getting transactions, blocks, balances, inscriptions, and june info on Junkcoin.
   version: 1.0.0
 servers:
   - url: http://localhost:8080
     description: Local development server
-  - url: https://wonky-ord.dogeord.io
-    description: Wonky Prod Server
+  - url: https://ord.junkiewally.xyz
+    description: Junkcoin Ord Indexer
 
 paths:
   /block-count:
@@ -122,6 +122,44 @@ paths:
       responses:
         '200':
           description: Output details
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /outputs/{output_list}:
+    get:
+      summary: Get details for multiple outputs
+      operationId: getOutputs
+      parameters:
+        - name: output_list
+          in: path
+          required: true
+          description: "Comma-separated list of outputs (format: txid:vout,txid:vout)"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Output details
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /address/{address}:
+    get:
+      summary: Get outputs owned by an address
+      operationId: getOutputsByAddress
+      parameters:
+        - name: address
+          in: path
+          required: true
+          description: Cryptocurrency address
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Outputs owned by the address
           content:
             text/html:
               schema:
@@ -281,6 +319,60 @@ paths:
               schema:
                 type: object
 
+  /junk20/ticks:
+    get:
+      summary: Get all JUNK20 ticks
+      operationId: getAllJunk20Ticks
+      responses:
+        '200':
+          description: All JUNK20 ticks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    tick:
+                      type: string
+                    supply:
+                      type: string
+                    minted:
+                      type: string
+
+  /junk20/tick/holder/{tick}:
+    get:
+      summary: Get holders of a specific JUNK20 tick
+      operationId: getJunk20TickHolder
+      parameters:
+        - name: tick
+          in: path
+          required: true
+          description: JUNK20 tick identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Holders of the JUNK20 tick
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tick:
+                    type: string
+                  holders:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        address:
+                          type: string
+                        balance:
+                          type: string
+                        transferable:
+                          type: string
+
   /june/{june}:
     get:
       summary: Get june details
@@ -429,6 +521,37 @@ paths:
               schema:
                 type: string
 
+  /junkscriptions:
+    get:
+      summary: Get all junkscriptions (alias for /inscriptions)
+      operationId: getAllJunkscriptions
+      responses:
+        '200':
+          description: List of junkscriptions
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /junkscriptions/{from}:
+    get:
+      summary: Get junkscriptions from a specific number (alias for /inscriptions/{from})
+      operationId: getJunkscriptionsFrom
+      parameters:
+        - name: from
+          in: path
+          required: true
+          description: Junkscription number to start from
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of junkscriptions
+          content:
+            text/html:
+              schema:
+                type: string
+
   /junkscription/{inscription_id}:
     get:
       summary: Get junkscription details
@@ -549,6 +672,159 @@ paths:
               schema:
                 type: object
 
+  /inscriptions/balance/{address}:
+    get:
+      summary: Get inscriptions owned by an address
+      operationId: getInscriptionsByAddress
+      parameters:
+        - name: address
+          in: path
+          required: true
+          description: Cryptocurrency address
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          description: Limit the number of results
+          schema:
+            type: integer
+        - name: show_all
+          in: query
+          required: false
+          description: Show all inscriptions including unconfirmed ones
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Inscriptions owned by the address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inscriptions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InscriptionByAddressJson'
+                  total_inscriptions:
+                    type: integer
+                  total_pages:
+                    type: integer
+
+  /inscriptions/balance/{address}/{page}:
+    get:
+      summary: Get paginated inscriptions owned by an address
+      operationId: getInscriptionsByAddressPaginated
+      parameters:
+        - name: address
+          in: path
+          required: true
+          description: Cryptocurrency address
+          schema:
+            type: string
+        - name: page
+          in: path
+          required: true
+          description: Page number
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          required: false
+          description: Limit the number of results
+          schema:
+            type: integer
+        - name: show_all
+          in: query
+          required: false
+          description: Show all inscriptions including unconfirmed ones
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Paginated inscriptions owned by the address
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  inscriptions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/InscriptionByAddressJson'
+                  total_inscriptions:
+                    type: integer
+                  total_pages:
+                    type: integer
+
+  /inscriptions/validate:
+    get:
+      summary: Validate inscriptions
+      operationId: validateInscriptions
+      parameters:
+        - name: addresses
+          in: query
+          required: true
+          description: Comma-separated list of addresses
+          schema:
+            type: string
+        - name: inscription_ids
+          in: query
+          required: true
+          description: Comma-separated list of inscription IDs
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Validation results
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /junkscriptions_on_outputs:
+    get:
+      summary: Get inscriptions on specific outputs
+      operationId: getInscriptionsByOutputs
+      parameters:
+        - name: outputs
+          in: query
+          required: true
+          description: "Comma-separated list of outputs (format: txid:vout)"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Inscriptions on outputs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /junkscriptions_by_outputs:
+    get:
+      summary: Get junkscriptions by outputs
+      operationId: getJunkscriptionsByOutputs
+      parameters:
+        - name: outputs
+          in: query
+          required: true
+          description: "Comma-separated list of outputs (format: txid:vout)"
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Junkscriptions by outputs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
   /junes/balance/{address}/{page}:
     get:
       summary: Get paginated june balances for an address
@@ -631,6 +907,61 @@ paths:
               schema:
                 type: string
 
+  /feed.xml:
+    get:
+      summary: Get RSS feed of recent inscriptions
+      operationId: getFeed
+      responses:
+        '200':
+          description: RSS feed
+          content:
+            application/rss+xml:
+              schema:
+                type: string
+
+  /input/{block}/{transaction}/{input}:
+    get:
+      summary: Get details of a specific transaction input
+      operationId: getInput
+      parameters:
+        - name: block
+          in: path
+          required: true
+          description: Block height or hash
+          schema:
+            type: string
+        - name: transaction
+          in: path
+          required: true
+          description: Transaction index in the block
+          schema:
+            type: integer
+        - name: input
+          in: path
+          required: true
+          description: Input index in the transaction
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Input details
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /install.sh:
+    get:
+      summary: Get installation script
+      operationId: getInstallScript
+      responses:
+        '200':
+          description: Installation script
+          content:
+            text/plain:
+              schema:
+                type: string
+
   /range/{start}/{end}:
     get:
       summary: Get details of a range of Satoshi values
@@ -672,6 +1003,33 @@ paths:
           description: Satoshi details
           content:
             text/html:
+              schema:
+                type: string
+
+  /ordinal/{sat}:
+    get:
+      summary: Redirect to Satoshi details
+      operationId: getOrdinal
+      parameters:
+        - name: sat
+          in: path
+          required: true
+          description: Satoshi value
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirect to Satoshi details
+
+  /rare.txt:
+    get:
+      summary: Get list of rare Satoshis
+      operationId: getRareTxt
+      responses:
+        '200':
+          description: List of rare Satoshis
+          content:
+            text/plain:
               schema:
                 type: string
 
@@ -780,72 +1138,189 @@ components:
       properties:
         txid:
           type: string
+          description: Transaction ID
         vout:
           type: integer
+          description: Output index in the transaction
         script:
           type: string
+          description: Output script in hex format
         shibes:
           type: integer
+          description: Value in shibes (satoshis)
         confirmations:
           type: integer
+          description: Number of confirmations
+
+    UtxoAddressJson:
+      type: object
+      properties:
+        utxos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Utxo'
+          description: List of UTXOs
+        total_shibes:
+          type: integer
+          description: Total value in shibes
+        total_utxos:
+          type: integer
+          description: Total number of UTXOs
+        total_inscription_shibes:
+          type: integer
+          description: Total value of UTXOs with inscriptions
+
     InscriptionByAddressJson:
       type: object
       properties:
         utxo:
           $ref: '#/components/schemas/Utxo'
+          description: UTXO containing the inscription
         content:
           type: string
+          description: Content of the inscription (base64 encoded)
         content_length:
           type: integer
+          description: Length of the content in bytes
         content_type:
           type: string
+          description: MIME type of the content
         genesis_height:
           type: integer
+          description: Block height where the inscription was created
         inscription_id:
           type: string
+          description: Unique ID of the inscription
         inscription_number:
           type: integer
+          description: Sequential number of the inscription
         timestamp:
           type: integer
+          description: Unix timestamp of inscription creation
         offset:
           type: integer
+          description: Offset within the UTXO
+
+    InscriptionAddressJson:
+      type: object
+      properties:
+        inscriptions:
+          type: array
+          items:
+            $ref: '#/components/schemas/InscriptionByAddressJson'
+          description: List of inscriptions
+        total_inscriptions:
+          type: integer
+          description: Total number of inscriptions
+        total_pages:
+          type: integer
+          description: Total number of pages
+
     JuneOutput:
       type: object
       properties:
         txid:
           type: string
+          description: Transaction ID
         vout:
           type: integer
+          description: Output index in the transaction
         script:
           type: string
+          description: Output script in hex format
         shibes:
           type: integer
+          description: Value in shibes (satoshis)
         balance:
           type: integer
+          description: June balance in this output
+
     JuneBalance:
       type: object
       properties:
         june:
           type: string
+          description: June identifier
         divisibility:
           type: integer
+          description: Divisibility of the june
         symbol:
           type: string
+          description: Symbol of the june
         total_balance:
           type: integer
+          description: Total balance of the june
         total_outputs:
           type: integer
+          description: Total number of outputs with this june
         balances:
           type: array
           items:
             $ref: '#/components/schemas/JuneOutput'
+          description: List of outputs with this june
+
     JuneHolder:
       type: object
       properties:
         june:
           type: string
+          description: June identifier
         holder:
           type: array
           items:
             type: string
+          description: List of addresses holding this june
+
+    TokenInfo:
+      type: object
+      properties:
+        tick:
+          type: string
+          description: Token ticker
+        inscription_id:
+          type: string
+          description: ID of the inscription that created the token
+        inscription_number:
+          type: integer
+          description: Number of the inscription that created the token
+        supply:
+          type: string
+          description: Total token supply
+        minted:
+          type: string
+          description: Amount minted so far
+        limit_per_mint:
+          type: string
+          description: Maximum amount per mint operation
+        decimal:
+          type: integer
+          description: Decimal places
+        deploy_by:
+          type: string
+          description: Address that deployed the token
+        deployed_number:
+          type: integer
+          description: Block number when the token was deployed
+        deployed_timestamp:
+          type: integer
+          description: Timestamp when the token was deployed
+        latest_mint_number:
+          type: integer
+          description: Block number of the latest mint
+
+    Balance:
+      type: object
+      properties:
+        tick:
+          type: string
+          description: Token ticker
+        available:
+          type: string
+          description: Available balance
+        transferable:
+          type: string
+          description: Transferable balance
+        overall_balance:
+          type: string
+          description: Total balance
 

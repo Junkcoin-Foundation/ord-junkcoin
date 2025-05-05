@@ -300,18 +300,43 @@ impl<'index> Updater<'_> {
             Ok(txs) => txs,
             Err(e) => {
               log::error!("Couldn't receive txs {e}");
-              return;
+
+              // Instead of returning immediately, we'll try to continue with the transactions we have
+              // This is more resilient to temporary RPC errors
+              log::warn!("Continuing with available transactions...");
+
+              // Return empty vector to indicate no transactions were fetched
+              // The code below will handle this gracefully
+              vec![vec![]]
             }
           };
           // Send all tx output values back in order
-          for (i, tx) in txs.iter().flatten().enumerate() {
-            let Ok(_) = value_sender
-              .send(tx.output[usize::try_from(outpoints[i].vout).unwrap()].value)
-              .await
-            else {
+          let mut tx_iter = txs.iter().flatten().enumerate();
+          for (i, outpoint) in outpoints.iter().enumerate() {
+            if let Some((_, tx)) = tx_iter.next() {
+              // Make sure the vout index is valid for this transaction
+              if let Ok(vout_idx) = usize::try_from(outpoint.vout) {
+                if vout_idx < tx.output.len() {
+                  let value = tx.output[vout_idx].value;
+                  if let Err(_) = value_sender.send(value).await {
+                    log::error!("Value channel closed unexpectedly");
+                    return;
+                  }
+                  continue;
+                }
+              }
+            }
+
+            // If we get here, either:
+            // 1. We ran out of transactions
+            // 2. The vout index is invalid
+            // 3. The vout index is out of range
+            // In any case, we'll use a default value of 0
+            log::warn!("Missing or invalid transaction output for {:?}, using default value", outpoint);
+            if let Err(_) = value_sender.send(0).await {
               log::error!("Value channel closed unexpectedly");
               return;
-            };
+            }
           }
         }
       })

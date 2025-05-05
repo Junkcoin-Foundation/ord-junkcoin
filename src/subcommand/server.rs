@@ -12,7 +12,7 @@ use {
     junk20::{script_key::ScriptKey, Tick},
     page_config::PageConfig,
     templates::{
-      AddressOutputJson, BlockHtml, BlockJson, JuneAddressJson, JuneBalance, JuneBalancesHtml,
+      AddressOutputJson, ApiHtml, BlockHtml, BlockJson, JuneAddressJson, JuneBalance, JuneBalancesHtml,
       JuneEntryJson, JuneHtml, JuneJson, JuneOutput, JuneOutputJson, JunesHtml, HomeHtml,
       InputHtml, InscriptionByAddressJson, InscriptionHtml, InscriptionJson, InscriptionsHtml,
       OutputHtml, OutputJson, PageContent, PageHtml, PreviewAudioHtml, PreviewImageHtml,
@@ -284,6 +284,7 @@ impl Server {
 
       let router = Router::new()
         .route("/", get(Self::home))
+        .route("/api", get(Self::api))
         .route("/block-count", get(Self::block_count))
         .route("/block/:query", get(Self::block))
         .route("/blocks/:query/:endquery", get(Self::blocks))
@@ -1668,6 +1669,12 @@ impl Server {
     Ok(HomeHtml::new(index.blocks(100)?, index.get_homepage_inscriptions()?).page(page_config))
   }
 
+  async fn api(
+    Extension(page_config): Extension<Arc<PageConfig>>,
+  ) -> ServerResult<Response> {
+    Ok(ApiHtml.page(page_config).into_response())
+  }
+
   async fn install_script() -> Redirect {
     Redirect::to("https://raw.githubusercontent.com/apezord/ord-junkcoin/master/install.sh")
   }
@@ -2319,7 +2326,7 @@ impl Server {
     Some((headers, inscription.into_body()?))
   }
 
-  pub(super) fn preview_content_security_policy(
+  fn preview_content_security_policy(
     media: Media,
     csp: &Option<String>,
   ) -> ServerResult<[(HeaderName, HeaderValue); 1]> {

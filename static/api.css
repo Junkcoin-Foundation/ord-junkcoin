@@ -1,0 +1,102 @@
+.api-section {
+  margin-bottom: 2rem;
+  background-color: var(--light-bg);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.api-section h2 {
+  margin-top: 0;
+  border-bottom: 1px solid var(--dark-fg);
+  padding-bottom: 0.5rem;
+}
+
+.endpoint {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: var(--dark-bg);
+  border-radius: 6px;
+}
+
+.endpoint h3 {
+  margin-top: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.endpoint h3::after {
+  content: "▼";
+  margin-left: auto;
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+}
+
+.endpoint h3.collapsed::after {
+  transform: rotate(-90deg);
+}
+
+.method {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background-color: #4169e1;
+  color: white;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+  font-family: monospace;
+  font-weight: normal;
+}
+
+.path {
+  font-family: monospace;
+  color: var(--mythic);
+}
+
+.example, .params {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: var(--light-bg);
+  border-radius: 4px;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+  max-height: 1000px;
+  opacity: 1;
+  overflow: hidden;
+}
+
+.example.collapsed, .params.collapsed {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.example h4, .params h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: var(--light-fg);
+}
+
+.example pre {
+  margin: 0;
+  padding: 1rem;
+  background-color: var(--dark-bg);
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.9rem;
+}
+
+.params ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.params li {
+  margin-bottom: 0.5rem;
+}
+
+.params code {
+  background-color: var(--dark-bg);
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  font-family: monospace;
+}

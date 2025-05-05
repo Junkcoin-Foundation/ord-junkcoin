@@ -19,7 +19,7 @@ services:
       "ord",
       "--rpc-url=${RPC_URL}",
       "--data-dir=/root/.data",
-      "--nr-parallel-requests=250",
+      "--nr-parallel-requests=10",
       "--first-inscription-height=${FIRST_INSCRIPTION_HEIGHT}",
       "--first-june-height=${FIRST_JUNE_HEIGHT}",
       "--index-junes",

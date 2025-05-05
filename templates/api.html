@@ -1,0 +1,722 @@
+<link rel=stylesheet href=/static/api.css>
+
+<h1>API Documentation</h1>
+
+<p>This page provides documentation for all available API endpoints in the Junkcoin Ord Indexer.</p>
+
+<div class="api-section">
+  <h2>Blockchain Information</h2>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/block-count</span></h3>
+    <p>Get the current block count.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>123456</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/block/{height_or_hash}</span></h3>
+    <p>Get block details by height or hash.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "hash": "000000000000000000000000000000000000000000000000000000000000000",
+  "height": 123456,
+  "confirmations": 1000,
+  "transactions": [...]
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/tx/{txid}</span></h3>
+    <p>Get transaction details by transaction ID.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "txid": "0000000000000000000000000000000000000000000000000000000000000000",
+  "blockhash": "0000000000000000000000000000000000000000000000000000000000000000",
+  "confirmations": 1000,
+  "inputs": [...],
+  "outputs": [...]
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="api-section">
+  <h2>Inscriptions</h2>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/inscriptions/balance/{address}</span></h3>
+    <p>Get all inscriptions owned by an address.</p>
+    <div class="params">
+      <h4>Query Parameters:</h4>
+      <ul>
+        <li><code>limit</code> - Limit the number of results (default: 10)</li>
+        <li><code>show_all</code> - Show all inscriptions including unconfirmed ones (default: false)</li>
+      </ul>
+    </div>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "inscriptions": [
+    {
+      "utxo": {
+        "txid": "0000000000000000000000000000000000000000000000000000000000000000",
+        "vout": 0,
+        "script": "76a914000000000000000000000000000000000000000088ac",
+        "shibes": 10000,
+        "confirmations": 100
+      },
+      "content_type": "image/png",
+      "content_length": 12345,
+      "genesis_height": 100000,
+      "inscription_id": "0000000000000000000000000000000000000000000000000000000000000000i0",
+      "inscription_number": 1234,
+      "timestamp": 1677721600,
+      "offset": 0
+    }
+  ],
+  "total_inscriptions": 1,
+  "total_pages": 1
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/inscriptions/balance/{address}/{page}</span></h3>
+    <p>Get paginated inscriptions owned by an address.</p>
+    <div class="params">
+      <h4>Query Parameters:</h4>
+      <ul>
+        <li><code>limit</code> - Limit the number of results (default: 10)</li>
+        <li><code>show_all</code> - Show all inscriptions including unconfirmed ones (default: false)</li>
+      </ul>
+    </div>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "inscriptions": [...],
+  "total_inscriptions": 100,
+  "total_pages": 10
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/inscriptions/validate</span></h3>
+    <p>Validate inscriptions.</p>
+    <div class="params">
+      <h4>Query Parameters:</h4>
+      <ul>
+        <li><code>addresses</code> - Comma-separated list of addresses</li>
+        <li><code>inscription_ids</code> - Comma-separated list of inscription IDs</li>
+      </ul>
+    </div>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "valid": true,
+  "results": [...]
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/junkscriptions_on_outputs</span></h3>
+    <p>Get inscriptions on specific outputs.</p>
+    <div class="params">
+      <h4>Query Parameters:</h4>
+      <ul>
+        <li><code>outputs</code> - Comma-separated list of outputs (format: txid:vout)</li>
+      </ul>
+    </div>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>[
+  {
+    "inscription_id": "0000000000000000000000000000000000000000000000000000000000000000i0",
+    "output": "0000000000000000000000000000000000000000000000000000000000000000:0"
+  }
+]</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/junkscriptions_by_outputs</span></h3>
+    <p>Get junkscriptions by outputs.</p>
+    <div class="params">
+      <h4>Query Parameters:</h4>
+      <ul>
+        <li><code>outputs</code> - Comma-separated list of outputs (format: txid:vout)</li>
+      </ul>
+    </div>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>[
+  {
+    "inscription_id": "0000000000000000000000000000000000000000000000000000000000000000i0",
+    "output": "0000000000000000000000000000000000000000000000000000000000000000:0"
+  }
+]</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/inscription/{inscription_id}</span></h3>
+    <p>Get details of a specific inscription.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "chain": "junkcoin",
+  "genesis_fee": 1000,
+  "genesis_height": 100000,
+  "inscription": {
+    "body": "...",
+    "content_type": "image/png"
+  },
+  "inscription_id": "0000000000000000000000000000000000000000000000000000000000000000i0",
+  "inscription_number": 1234,
+  "output": {
+    "value": 10000,
+    "script_pubkey": "76a914000000000000000000000000000000000000000088ac"
+  },
+  "satpoint": "0000000000000000000000000000000000000000000000000000000000000000:0:0",
+  "timestamp": "2023-03-02T00:00:00Z"
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/content/{inscription_id}</span></h3>
+    <p>Get the raw content of an inscription.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>Binary data of the inscription content</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/preview/{inscription_id}</span></h3>
+    <p>Get a preview of an inscription.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>HTML page with a preview of the inscription</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/inscriptions</span></h3>
+    <p>Get all inscriptions.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>HTML page with all inscriptions</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/inscriptions/{from}</span></h3>
+    <p>Get inscriptions from a specific number.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>HTML page with inscriptions starting from the specified number</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/junkscriptions</span></h3>
+    <p>Get all junkscriptions (alias for /inscriptions).</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>HTML page with all junkscriptions</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/junkscriptions/{from}</span></h3>
+    <p>Get junkscriptions from a specific number (alias for /inscriptions/{from}).</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>HTML page with junkscriptions starting from the specified number</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/junkscription/{inscription_id}</span></h3>
+    <p>Get junkscription details (alias for /inscription/{inscription_id}).</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>HTML page with junkscription details</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/static/{path}</span></h3>
+    <p>Get static assets (CSS, JavaScript, images, etc.).</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>Static asset content</i></p>
+    </div>
+  </div>
+</div>
+
+<div class="api-section">
+  <h2>UTXO Management</h2>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/utxos/balance/{address}</span></h3>
+    <p>Get all UTXOs for an address.</p>
+    <div class="params">
+      <h4>Query Parameters:</h4>
+      <ul>
+        <li><code>limit</code> - Limit the number of results (default: 10)</li>
+        <li><code>show_all</code> - Show all UTXOs including unconfirmed ones (default: false)</li>
+        <li><code>value_filter</code> - Filter UTXOs by minimum value</li>
+      </ul>
+    </div>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "utxos": [
+    {
+      "txid": "0000000000000000000000000000000000000000000000000000000000000000",
+      "vout": 0,
+      "script": "76a914000000000000000000000000000000000000000088ac",
+      "shibes": 10000,
+      "confirmations": 100
+    }
+  ],
+  "total_shibes": 10000,
+  "total_utxos": 1,
+  "total_inscription_shibes": 0
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/address/{address}</span></h3>
+    <p>Get outputs owned by an address.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>HTML page with outputs owned by the address</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/output/{outpoint}</span></h3>
+    <p>Get details of a specific output.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "value": 10000,
+  "script_pubkey": "76a914000000000000000000000000000000000000000088ac",
+  "address": "J..."
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/outputs/{output_list}</span></h3>
+    <p>Get details for multiple outputs.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>HTML page with details for multiple outputs</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/input/{block}/{transaction}/{input}</span></h3>
+    <p>Get details of a specific transaction input.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>HTML page with input details</i></p>
+    </div>
+  </div>
+</div>
+
+<div class="api-section">
+  <h2>JUNK20 Tokens</h2>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/junk20/balance/{address}</span></h3>
+    <p>Get JUNK20 token balances for an address.</p>
+    <div class="params">
+      <h4>Query Parameters:</h4>
+      <ul>
+        <li><code>tick</code> - Filter by token ticker</li>
+        <li><code>show_utxos</code> - Show UTXO information (default: false)</li>
+      </ul>
+    </div>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "junk20": [
+    {
+      "tick": "TEST",
+      "available": "1000",
+      "transferable": "1000",
+      "overall_balance": "1000",
+      "utxos": [
+        {
+          "utxo": {
+            "txid": "0000000000000000000000000000000000000000000000000000000000000000",
+            "vout": 0,
+            "shibes": 10000
+          },
+          "junk20": {
+            "balance": "1000",
+            "operation": "transfer",
+            "valid": true
+          },
+          "inscription_id": "0000000000000000000000000000000000000000000000000000000000000000i0",
+          "inscription_number": 1234,
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/junk20/validate</span></h3>
+    <p>Validate JUNK20 token transfers.</p>
+    <div class="params">
+      <h4>Query Parameters:</h4>
+      <ul>
+        <li><code>addresses</code> - Comma-separated list of addresses</li>
+        <li><code>tick</code> - Token ticker</li>
+        <li><code>amount</code> - Amount to validate</li>
+      </ul>
+    </div>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "valid": true,
+  "results": [
+    {
+      "address": "J...",
+      "tick": "TEST",
+      "amount": "1000",
+      "valid": true
+    }
+  ]
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/junk20/tick/{tick}</span></h3>
+    <p>Get information about a specific JUNK20 token.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "tick": "TEST",
+  "inscription_id": "0000000000000000000000000000000000000000000000000000000000000000i0",
+  "inscription_number": 1234,
+  "supply": "21000000",
+  "minted": "10000000",
+  "limit_per_mint": "1000",
+  "decimal": 8,
+  "deploy_by": "J...",
+  "deployed_number": 100000,
+  "deployed_timestamp": 1677721600,
+  "latest_mint_number": 110000
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/junk20/ticks</span></h3>
+    <p>Get a list of all JUNK20 tokens.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>[
+  {
+    "tick": "TEST",
+    "supply": "21000000",
+    "minted": "10000000"
+  },
+  {
+    "tick": "JUNK",
+    "supply": "1000000",
+    "minted": "500000"
+  }
+]</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/junk20/tick/holder/{tick}</span></h3>
+    <p>Get holders of a specific JUNK20 token.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "tick": "TEST",
+  "holders": [
+    {
+      "address": "J...",
+      "balance": "1000",
+      "transferable": "1000"
+    }
+  ]
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="api-section">
+  <h2>Junes</h2>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/june/{june}</span></h3>
+    <p>Get details of a specific june.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "entry": {
+    "burned": 0,
+    "divisibility": 8,
+    "etching": "0000000000000000000000000000000000000000000000000000000000000000",
+    "mint": {
+      "cap": 21000000,
+      "height": 100000,
+      "limit": 1000,
+      "offset": 0
+    },
+    "mints": 100,
+    "number": 1,
+    "june": "TEST",
+    "supply": 10000000,
+    "symbol": "$",
+    "timestamp": 1677721600
+  },
+  "id": "100000:0",
+  "mintable": true,
+  "inscription": "0000000000000000000000000000000000000000000000000000000000000000i0"
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/junes/balance/{address}</span></h3>
+    <p>Get june balances for an address.</p>
+    <div class="params">
+      <h4>Query Parameters:</h4>
+      <ul>
+        <li><code>show_all</code> - Show all june balances (default: false)</li>
+        <li><code>list_junes</code> - List june information (default: false)</li>
+        <li><code>filter</code> - Filter by june name</li>
+      </ul>
+    </div>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "balances": [
+    {
+      "june": "TEST",
+      "divisibility": 8,
+      "symbol": "$",
+      "total_balance": 1000,
+      "total_outputs": 1,
+      "balances": [
+        {
+          "txid": "0000000000000000000000000000000000000000000000000000000000000000",
+          "vout": 0,
+          "script": "76a914000000000000000000000000000000000000000088ac",
+          "shibes": 10000,
+          "balance": 1000
+        }
+      ]
+    }
+  ]
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/junes_on_outputs</span></h3>
+    <p>Get junes on specific outputs.</p>
+    <div class="params">
+      <h4>Query Parameters:</h4>
+      <ul>
+        <li><code>outputs</code> - Comma-separated list of outputs (format: txid:vout)</li>
+      </ul>
+    </div>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>[
+  {
+    "june": "TEST",
+    "output": "0000000000000000000000000000000000000000000000000000000000000000:0",
+    "balance": 1000
+  }
+]</code></pre>
+    </div>
+  </div>
+</div>
+
+<div class="api-section">
+  <h2>Other Endpoints</h2>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/sat/{sat}</span></h3>
+    <p>Get information about a specific satoshi.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>{
+  "sat": 5000000000,
+  "satpoint": "0000000000000000000000000000000000000000000000000000000000000000:0:0",
+  "blocktime": 1677721600,
+  "inscription": "0000000000000000000000000000000000000000000000000000000000000000i0"
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/ordinal/{sat}</span></h3>
+    <p>Get ordinal information about a specific satoshi (alias for /sat/{sat}).</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>Same as /sat/{sat}</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/range/{start}/{end}</span></h3>
+    <p>Get information about a range of satoshis.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>HTML page with information about the satoshi range</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/rare.txt</span></h3>
+    <p>Get a list of rare satoshis.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>Text file with rare satoshi information</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/search</span></h3>
+    <p>Search for blocks, transactions, inscriptions, or satoshis.</p>
+    <div class="params">
+      <h4>Query Parameters:</h4>
+      <ul>
+        <li><code>query</code> - Search query</li>
+      </ul>
+    </div>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>Redirects to the appropriate resource</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/search/{query}</span></h3>
+    <p>Search by path parameter instead of query parameter.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>Redirects to the appropriate resource</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/faq</span></h3>
+    <p>Redirect to FAQ page.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>Redirects to FAQ page</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/bounties</span></h3>
+    <p>Redirect to bounties page.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>Redirects to bounties page</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/status</span></h3>
+    <p>Get the status of the ord-junkcoin server.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>OK</code></pre>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/feed.xml</span></h3>
+    <p>Get an RSS feed of recent inscriptions.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>RSS XML feed</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/install.sh</span></h3>
+    <p>Get the installation script for ord-junkcoin.</p>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <p><i>Shell script for installation</i></p>
+    </div>
+  </div>
+
+  <div class="endpoint">
+    <h3><span class="method">GET</span> <span class="path">/blocks/{start}/{end}</span></h3>
+    <p>Get information about a range of blocks.</p>
+    <div class="params">
+      <h4>Query Parameters:</h4>
+      <ul>
+        <li><code>no_input_data</code> - Skip input data (default: true)</li>
+        <li><code>no_inscriptions</code> - Skip inscriptions (default: false)</li>
+      </ul>
+    </div>
+    <div class="example">
+      <h4>Example Response:</h4>
+      <pre><code>[
+  {
+    "hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "height": 100000,
+    "txids": "...",
+    "inputs_per_tx": {...},
+    "outputs_per_tx": {...}
+  }
+]</code></pre>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add click handlers to make endpoints collapsible
+    const endpoints = document.querySelectorAll('.endpoint h3');
+    endpoints.forEach(function(endpoint) {
+      endpoint.addEventListener('click', function() {
+        const content = this.parentNode.querySelector('.example');
+        const params = this.parentNode.querySelector('.params');
+
+        if (content) {
+          content.classList.toggle('collapsed');
+        }
+
+        if (params) {
+          params.classList.toggle('collapsed');
+        }
+
+        this.classList.toggle('collapsed');
+      });
+    });
+  });
+</script>

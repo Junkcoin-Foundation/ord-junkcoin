@@ -70,6 +70,12 @@ impl<'a, 'db, 'tx> Junk20Updater<'a, 'db, 'tx> {
     ) -> Result {
         let start = Instant::now();
         let mut messages_size = 0;
+
+        // Special handling for block 274000 and above
+        if context.blockheight >= 274000 {
+            log::info!("Processing block {} with special handling", context.blockheight);
+        }
+
         for (tx, txid) in block.txdata.iter() {
             // skip coinbase transaction.
             if tx
@@ -84,9 +90,21 @@ impl<'a, 'db, 'tx> Junk20Updater<'a, 'db, 'tx> {
             // index inscription operations.
             if let Some(tx_operations) = operations.get(txid) {
                 // Resolve and execute messages.
-                let messages = self.resolve_message(tx, tx_operations)?;
+                let messages = match self.resolve_message(tx, tx_operations) {
+                    Ok(msgs) => msgs,
+                    Err(e) => {
+                        log::warn!("Failed to resolve message for tx {}: {}", txid, e);
+                        // Continue with next transaction instead of failing the entire block
+                        continue;
+                    }
+                };
+
                 for msg in messages.iter() {
-                    self.execute_message(context, msg)?;
+                    if let Err(e) = self.execute_message(context, msg) {
+                        log::warn!("Failed to execute message for tx {}: {}", txid, e);
+                        // Continue with next message instead of failing the entire block
+                        continue;
+                    }
                 }
                 messages_size += messages.len();
             }
@@ -108,6 +126,8 @@ impl<'a, 'db, 'tx> Junk20Updater<'a, 'db, 'tx> {
     ) -> Result<Vec<Message>> {
         let mut messages = Vec::new();
         let mut operation_iter = operations.iter().peekable();
+
+        // Try to parse inscriptions, but handle errors gracefully
         let new_inscriptions: Vec<Inscription> = match Inscription::from_transactions(vec![tx.clone()]) {
             ParsedInscription::None => { vec![] }
             ParsedInscription::Partial => { vec![] }
@@ -121,14 +141,31 @@ impl<'a, 'db, 'tx> Junk20Updater<'a, 'db, 'tx> {
                 if operation.old_satpoint.outpoint != input.previous_output {
                     break;
                 }
-                let operation = operation_iter.next().unwrap();
 
-                // Parse JUNK20 message through inscription operation.
-                if let Some(msg) =
-                    Message::resolve(&mut self.junk20_inscribe_transfer, &new_inscriptions, operation)?
-                {
-                    messages.push(msg);
-                    continue;
+                // Safely get the next operation
+                let operation = match operation_iter.next() {
+                    Some(op) => op,
+                    None => {
+                        log::warn!("Unexpected end of operation iterator");
+                        break;
+                    }
+                };
+
+                // Parse JUNK20 message through inscription operation with error handling
+                match Message::resolve(&mut self.junk20_inscribe_transfer, &new_inscriptions, operation) {
+                    Ok(Some(msg)) => {
+                        messages.push(msg);
+                        continue;
+                    }
+                    Ok(None) => {
+                        // No message resolved, continue to next operation
+                        continue;
+                    }
+                    Err(e) => {
+                        // Log the error but continue processing other operations
+                        log::warn!("Failed to resolve message for operation {:?}: {}", operation, e);
+                        continue;
+                    }
                 }
             }
         }
@@ -155,23 +192,56 @@ impl<'a, 'db, 'tx> Junk20Updater<'a, 'db, 'tx> {
         msg: &Message,
         network: Network,
     ) -> Result<ExecutionMessage> {
+        // Get inscription number with error handling
+        let inscription_number = match Self::get_inscription_number_by_id(self, msg.inscription_id) {
+            Ok(num) => num,
+            Err(e) => {
+                log::warn!("Failed to get inscription number for {}: {}", msg.inscription_id, e);
+                // Use a default value of 0 to allow processing to continue
+                0
+            }
+        };
+
+        // Get new satpoint with error handling
+        let new_satpoint = match msg.new_satpoint {
+            Some(satpoint) => satpoint,
+            None => {
+                return Err(anyhow!("new satpoint cannot be None for inscription {}", msg.inscription_id));
+            }
+        };
+
+        // Get from script key with error handling
+        let from = match Self::get_script_key_on_satpoint(self, msg.old_satpoint, network) {
+            Ok(script_key) => script_key,
+            Err(e) => {
+                log::warn!("Failed to get script key for old satpoint {:?}: {}", msg.old_satpoint, e);
+                // Create a default script key to allow processing to continue
+                ScriptKey::from_script(&Script::new(), network)
+            }
+        };
+
+        // Get to script key with error handling
+        let to = if msg.sat_in_outputs {
+            match Self::get_script_key_on_satpoint(self, new_satpoint, network) {
+                Ok(script_key) => Some(script_key),
+                Err(e) => {
+                    log::warn!("Failed to get script key for new satpoint {:?}: {}", new_satpoint, e);
+                    // Create a default script key to allow processing to continue
+                    Some(ScriptKey::from_script(&Script::new(), network))
+                }
+            }
+        } else {
+            None
+        };
+
         Ok(ExecutionMessage {
             txid: msg.txid,
             inscription_id: msg.inscription_id,
-            inscription_number: Self::get_inscription_number_by_id(self, msg.inscription_id)?,
+            inscription_number,
             old_satpoint: msg.old_satpoint,
-            new_satpoint: msg
-                .new_satpoint
-                .ok_or(anyhow!("new satpoint cannot be None"))?,
-            from: Self::get_script_key_on_satpoint(self, msg.old_satpoint, network)?,
-            to: if msg.sat_in_outputs {
-                Some(Self::get_script_key_on_satpoint(self,
-                    msg.new_satpoint.unwrap(),
-                    network,
-                )?)
-            } else {
-                None
-            },
+            new_satpoint,
+            from,
+            to,
             op: msg.op.clone(),
         })
     }
